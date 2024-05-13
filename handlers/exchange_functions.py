@@ -13,22 +13,25 @@ from config_reader import config
 
 logger = Logger()
 
-def get_today_rate_from_db(date: date):
+def get_today_rate_from_db(today: date):
     """
     Retrieves exchange rate that was collected today
     Args:
         date (date): todays date
+    Returns:
+        list: todays exchange rates
     """
     with Session(autoflush=False, bind=Engine().engine) as db:
         result = (
             db.query(ExchangeRate.date, ExchangeRate.rate)
-            .filter(func.date(ExchangeRate.date) == date)
+            .filter(func.date(ExchangeRate.date) == today)
             .all()
         )
 
     if not result:
         logger.error("Impossible to retrieve data from db")
 
+    return result
 
 
 def write_to_file():
@@ -52,9 +55,10 @@ def write_to_file():
         sheet.append(list(row))
 
     file_name = f"Exchange USD-UAH {today}.xlsx"
-    workbook.save(os.path.join("rates", file_name))
+    path = os.path.join("rates", file_name)
+    workbook.save(path)
 
-    return file_name
+    return path
 
 
 def save_exchange_rate(rate: float):
@@ -93,16 +97,15 @@ async def exchange_request_uah():
         logger.error("Unable to retrieve exchange rate from site")
         return None
 
-# Scheduler task
 async def schedule_exchange_retrieve_request():
     """
     Schedules time when request for new exchange rate will be perfomed
     """
 
-    aioschedule.every(1).minutes.do(exchange_request_uah)
+    aioschedule.every().hour.at(":00").do(exchange_request_uah)
     while True:
         await aioschedule.run_pending()
-        await asyncio.sleep(10)
+        await asyncio.sleep(60)
 
 
 if __name__ == "__main__":

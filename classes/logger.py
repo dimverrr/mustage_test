@@ -7,6 +7,9 @@ class Logger:
         self.logger.setLevel(logging.INFO)
         self.formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
+    def basic_config(self):
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+
     def info(self, message):
         self.logger.info(message)
 
