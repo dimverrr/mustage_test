@@ -10,7 +10,6 @@ router = Router()
 async def cmd_start(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
-        text="Choose what you want to do: "
-        "Create workout (/workout) or calculate body mass index (BMI) (/bmi).",
+        text="Run /get_exchange_rate command to get file with USD-UAH exchange rates",
         reply_markup=ReplyKeyboardRemove(),
     )
