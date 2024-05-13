@@ -49,7 +49,7 @@ def write_to_file():
     workbook = openpyxl.Workbook()
 
     sheet = workbook.active
-    
+
     headers = ["datetime", "exchange_rate"]
     sheet.append(headers)
 
@@ -108,13 +108,9 @@ async def schedule_exchange_retrieve_request():
     """
     Schedules time when request for new exchange rate will be perfomed
     """
-    aioschedule.every().minute.do(exchange_request_uah)
-
-    # aioschedule.every().hour.at(":00").do(exchange_request_uah)
+    aioschedule.every().hour.at(":00").do(exchange_request_uah)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
 
 
-if __name__ == "__main__":
-    exchange_request_uah()
