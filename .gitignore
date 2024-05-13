@@ -6,3 +6,4 @@ include/
 *.env
 __pycache__/
 .cache_ggshield
+.db

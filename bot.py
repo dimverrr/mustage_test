@@ -5,7 +5,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import common, exchange_request
 
 from config_reader import config
-from handlers.exchange_processing import update_exchange_rate
+from handlers.exchange_functions import update_exchange_rate
 
 
 async def main():
