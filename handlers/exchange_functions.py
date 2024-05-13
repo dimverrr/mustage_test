@@ -10,6 +10,7 @@ from sqlalchemy import func
 import os
 from classes.logger import Logger
 from config_reader import config
+from openpyxl.styles import PatternFill
 
 logger = Logger()
 
@@ -48,8 +49,14 @@ def write_to_file():
     workbook = openpyxl.Workbook()
 
     sheet = workbook.active
+    
     headers = ["datetime", "exchange_rate"]
     sheet.append(headers)
+
+    sheet.column_dimensions["A"].width = 20
+    sheet["A1"].fill = PatternFill("solid", start_color="FFFF00")
+    sheet.column_dimensions["B"].width = 20
+    sheet["B1"].fill = PatternFill("solid", start_color="FFFF00")
 
     for row in today_rates:
         sheet.append(list(row))
@@ -101,12 +108,13 @@ async def schedule_exchange_retrieve_request():
     """
     Schedules time when request for new exchange rate will be perfomed
     """
+    aioschedule.every().minute.do(exchange_request_uah)
 
-    aioschedule.every().hour.at(":00").do(exchange_request_uah)
+    # aioschedule.every().hour.at(":00").do(exchange_request_uah)
     while True:
         await aioschedule.run_pending()
-        await asyncio.sleep(60)
+        await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
-    schedule_exchange_retrieve_request()
+    exchange_request_uah()
