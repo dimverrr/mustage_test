@@ -5,7 +5,7 @@ from classes.db import Engine, ExchangeRate
 import openpyxl
 import aioschedule
 import asyncio
-from datetime import date
+from datetime import date, datetime
 from sqlalchemy import func
 import os
 from classes.logger import Logger
@@ -18,9 +18,9 @@ def get_today_rate_from_db(today: date):
     """
     Retrieves exchange rate that was collected today
     Args:
-        date (date): todays date
+        date (date): today's date
     Returns:
-        list: todays exchange rates
+        list: today's exchange rates
     """
     with Session(autoflush=False, bind=Engine().engine) as db:
         result = (
@@ -37,7 +37,7 @@ def get_today_rate_from_db(today: date):
 
 def write_to_file():
     """
-    Writes exchange rate to the file with todays date 
+    Writes exchange rate to the file with today's date 
 
     Returns:
         str: name of file, where exchange rates are saved
@@ -61,7 +61,7 @@ def write_to_file():
     for row in today_rates:
         sheet.append(list(row))
 
-    file_name = f"Exchange USD-UAH {today}.xlsx"
+    file_name = f"Exchange UAH-USD {today}.xlsx"
     path = os.path.join("rates", file_name)
     workbook.save(path)
 
@@ -76,7 +76,7 @@ def save_exchange_rate(rate: float):
         rate (float): exchange rate of currency
     """
     with Session(autoflush=False, bind=Engine().engine) as db:
-        exchange_rate = ExchangeRate(rate=rate)
+        exchange_rate = ExchangeRate(rate=rate, date=datetime.now())
         db.add(exchange_rate)
         db.commit()
 
